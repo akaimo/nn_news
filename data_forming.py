@@ -26,14 +26,14 @@ for file in find_all_files('./raw_data'):
         data = pd.concat([data, csv_data[['title', 'category']]])
 
 data['category'] = data['category'].replace({
-    '政治': '1',
-    '社会': '2',
-    '国際': '3',
-    'ビジネス': '4',
-    '科学・文化': '5',
-    '暮らし': '6',
-    '気象・災害': '7',
-    'スポーツ': '8'
+    '政治': '0',
+    '社会': '1',
+    '国際': '2',
+    'ビジネス': '3',
+    '科学・文化': '4',
+    '暮らし': '5',
+    '気象・災害': '6',
+    'スポーツ': '7'
 })
 
 data.to_csv('sample.csv', index=False)
