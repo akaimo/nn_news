@@ -36,4 +36,4 @@ data['category'] = data['category'].replace({
     'スポーツ': '7'
 })
 
-data.to_csv('sample.csv', index=False)
+data.to_csv('learning_data.csv', index=False)
