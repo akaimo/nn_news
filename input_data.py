@@ -41,3 +41,9 @@ for word_array in word_arrays:
 correct_data = []
 for line in learning_data['category']:
     correct_data.append(line)
+
+validation_size = 4000
+validation_text = input_data[:validation_size]
+validation_labels = correct_data[:validation_size]
+train_text = input_data[validation_size:]
+train_labels = correct_data[validation_size:]
