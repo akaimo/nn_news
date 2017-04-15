@@ -3,6 +3,7 @@
 import collections
 import pandas as pd
 import MeCab
+import numpy
 
 learning_data = pd.read_csv('learning_data.csv')
 mecab = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
@@ -10,10 +11,19 @@ mecab = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
 
 Datasets = collections.namedtuple('Datasets', ['train', 'validation'])
 
+
 class DataSet(object):
     def __init__(self, texts, labels):
         self._texts = texts
         self._labels = labels
+
+    @property
+    def texts(self):
+        return self._texts
+
+    @property
+    def labels(self):
+        return self._labels
 
 
 def read_data_sets(validation_size=4000):
@@ -53,10 +63,10 @@ def read_data_sets(validation_size=4000):
     for line in learning_data['category']:
         correct_data.append(line)
 
-    validation_text = input_data[:validation_size]
-    validation_labels = correct_data[:validation_size]
-    train_text = input_data[validation_size:]
-    train_labels = correct_data[validation_size:]
+    validation_text = numpy.array(input_data[:validation_size])
+    validation_labels = numpy.array(correct_data[:validation_size])
+    train_text = numpy.array(input_data[validation_size:])
+    train_labels = numpy.array(correct_data[validation_size:])
 
     train = DataSet(train_text, train_labels)
     validation = DataSet(validation_text, validation_labels)
