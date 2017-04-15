@@ -1,18 +1,27 @@
 # coding: utf-8
 
+import collections
 import pandas as pd
 import MeCab
 
-
 learning_data = pd.read_csv('learning_data.csv')
 mecab = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
-word_dictionary = {}
-word_arrays = []
-input_data = []
-correct_data = []
+
+
+Datasets = collections.namedtuple('Datasets', ['train', 'validation'])
+
+class DataSet(object):
+    def __init__(self, texts, labels):
+        self._texts = texts
+        self._labels = labels
 
 
 def read_data_sets(validation_size=4000):
+    word_dictionary = {}
+    word_arrays = []
+    input_data = []
+    correct_data = []
+
     with open("word_dictionary.txt", "r") as file:
         for line in file:
             line = line.replace('\n', '')
@@ -48,3 +57,8 @@ def read_data_sets(validation_size=4000):
     validation_labels = correct_data[:validation_size]
     train_text = input_data[validation_size:]
     train_labels = correct_data[validation_size:]
+
+    train = DataSet(train_text, train_labels)
+    validation = DataSet(validation_text, validation_labels)
+
+    return Datasets(train=train, validation=validation)

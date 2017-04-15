@@ -4,7 +4,8 @@ import input_data
 
 
 def main():
-    input_data.read_data_sets()
+    news = input_data.read_data_sets()
+    print(news)
 
 if __name__ == '__main__':
     main()
