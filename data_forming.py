@@ -37,3 +37,5 @@ data['category'] = data['category'].replace({
 })
 
 data.to_csv('learning_data.csv', index=False)
+
+print('Success learning_data.csv')

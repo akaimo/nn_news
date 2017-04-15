@@ -1,1 +1,4 @@
 raw_data/*/
+__pycache__
+word_dictionary.txt
+learning_data.csv

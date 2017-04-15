@@ -24,3 +24,5 @@ for text in learning_data['title']:
 f = open('word_dictionary.txt', 'w')
 for i, text in enumerate(s):
     f.write(str(i) + ': ' + text + '\n')
+
+print('Success word_dictionary.txt')
