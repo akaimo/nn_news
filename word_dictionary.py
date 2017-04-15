@@ -5,7 +5,10 @@ import MeCab
 
 
 learning_data = pd.read_csv('learning_data.csv')
+# Ubuntu
 mecab = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
+# Mac
+# mecab = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
 
 s = set()
 

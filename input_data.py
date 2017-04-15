@@ -6,7 +6,10 @@ import MeCab
 import numpy
 
 learning_data = pd.read_csv('learning_data.csv')
+# Ubuntu
 mecab = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
+# Mac
+# mecab = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
 
 
 Datasets = collections.namedtuple('Datasets', ['train', 'validation'])
@@ -39,6 +42,7 @@ def read_data_sets(validation_size=4000):
             word_dictionary[l[1]] = l[0]
 
     for line in learning_data['title']:
+        mecab.parseToNode('')  # https://shogo82148.github.io/blog/2015/12/20/mecab-in-python3-final/
         text = mecab.parseToNode(line)
         word_array = []
         while text:
