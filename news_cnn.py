@@ -10,6 +10,7 @@ NUM_FILTERS = 128
 FILTER_SIZES = [3, 4, 5]
 
 news = input_data.read_data_sets()
+keep = tf.placeholder(tf.float32)
 
 # input layer
 x_dim = news.train.texts.shape[1]
@@ -34,3 +35,11 @@ for filter_size in FILTER_SIZES:
         p_array.append(c2)
 
 p = tf.concat(p_array, 3)
+
+# Fully-connected layer
+with tf.name_scope('fc'):
+    total_filters = NUM_FILTERS * len(FILTER_SIZES)
+    w = tf.Variable(tf.truncated_normal([total_filters, NUM_CATEGORY], stddev=0.02), name='weight')
+    b = tf.Variable(tf.constant(0.1, shape=[NUM_CATEGORY]), name='bias')
+    h0 = tf.nn.dropout(tf.reshape(p, [-1, total_filters]), keep)
+    predict_y = tf.nn.softmax(tf.matmul(h0, w) + b)
