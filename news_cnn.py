@@ -8,6 +8,7 @@ NUM_CATEGORY = 8
 EMBEDDING_SIZE = 128  # Hyper parameter
 NUM_FILTERS = 128
 FILTER_SIZES = [3, 4, 5]
+L2_LAMBDA = 0.0001
 
 news = input_data.read_data_sets()
 keep = tf.placeholder(tf.float32)
@@ -43,3 +44,9 @@ with tf.name_scope('fc'):
     b = tf.Variable(tf.constant(0.1, shape=[NUM_CATEGORY]), name='bias')
     h0 = tf.nn.dropout(tf.reshape(p, [-1, total_filters]), keep)
     predict_y = tf.nn.softmax(tf.matmul(h0, w) + b)
+
+# optimize
+xentropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=input_y, logits=predict_y))
+loss = xentropy + L2_LAMBDA * tf.nn.l2_loss(w)
+global_step = tf.Variable(0, name='global_step', trainable=False)
+train = tf.train.AdamOptimizer(0.0001).minimize(loss, global_step=global_step)
