@@ -12,7 +12,7 @@ mecab = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
 # mecab = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd -Owakati')
 
 
-Datasets = collections.namedtuple('Datasets', ['train', 'validation'])
+Datasets = collections.namedtuple('Datasets', ['train', 'validation', 'dictionary'])
 
 
 class DataSet(object):
@@ -75,4 +75,4 @@ def read_data_sets(validation_size=4000):
     train = DataSet(train_text, train_labels)
     validation = DataSet(validation_text, validation_labels)
 
-    return Datasets(train=train, validation=validation)
+    return Datasets(train=train, validation=validation, dictionary=word_dictionary)
