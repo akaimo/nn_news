@@ -50,3 +50,12 @@ xentropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=input_y
 loss = xentropy + L2_LAMBDA * tf.nn.l2_loss(w)
 global_step = tf.Variable(0, name='global_step', trainable=False)
 train = tf.train.AdamOptimizer(0.0001).minimize(loss, global_step=global_step)
+
+# TensorBoard
+predict = tf.equal(tf.argmax(predict_y, 1), tf.argmax(input_y, 1))
+accuracy = tf.reduce_mean(tf.cast(predict, tf.float32))
+loss_sum = tf.summary.scalar('train loss', loss)
+accr_sum = tf.summary.scalar('train accuracy', accuracy)
+t_loss_sum = tf.summary.scalar('general loss', loss)
+t_accr_sum = tf.summary.scalar('general accuracy', accuracy)
+server = tf.train.Saver()
