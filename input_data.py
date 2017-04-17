@@ -29,7 +29,7 @@ class DataSet(object):
         return self._labels
 
 
-def read_data_sets(validation_size=4000):
+def read_data_sets(validation_size=4000, one_hot=False):
     word_dictionary = {}
     word_arrays = []
     input_data = []
@@ -66,6 +66,18 @@ def read_data_sets(validation_size=4000):
 
     for line in learning_data['category']:
         correct_data.append(line)
+
+    if one_hot:
+        max_category_number = 0
+        for line in learning_data['category']:
+            if max_category_number < int(line):
+                max_category_number = int(line)
+        data = []
+        for line in learning_data['category']:
+            array = [0 for _ in range(max_category_number + 1)]
+            array[int(line)] = 1
+            data.append(array)
+        correct_data = data
 
     validation_text = numpy.array(input_data[:validation_size])
     validation_labels = numpy.array(correct_data[:validation_size])
