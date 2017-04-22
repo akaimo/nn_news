@@ -2,6 +2,9 @@
 
 import input_data
 import tensorflow as tf
+import numpy as np
+import sys
+from datetime import datetime
 
 
 NUM_CATEGORY = 8
@@ -9,8 +12,18 @@ EMBEDDING_SIZE = 128  # Hyper parameter
 NUM_FILTERS = 128
 FILTER_SIZES = [3, 4, 5]
 L2_LAMBDA = 0.0001
+NUM_MINI_BATCH = 64
+NUM_EPOCHS = 10
+CHECKPOINTS_EVERY = 1000
+EVALUATE_EVERY = 100
 
-news = input_data.read_data_sets()
+
+def log(content):
+    time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    print(time + ': ' + content)
+    sys.stdout.flush()
+
+news = input_data.read_data_sets(validation_size=1000, one_hot=True)
 keep = tf.placeholder(tf.float32)
 
 # input layer
@@ -58,4 +71,61 @@ loss_sum = tf.summary.scalar('train loss', loss)
 accr_sum = tf.summary.scalar('train accuracy', accuracy)
 t_loss_sum = tf.summary.scalar('general loss', loss)
 t_accr_sum = tf.summary.scalar('general accuracy', accuracy)
-server = tf.train.Saver()
+saver = tf.train.Saver()
+
+# Session
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    writer = tf.summary.FileWriter('Log', sess.graph)
+    train_x_length = len(news.train.texts)
+    batch_count = int(train_x_length / NUM_MINI_BATCH) + 1
+
+    print('')
+    log('Start training.')
+    log('     epoch: %d' % NUM_EPOCHS)
+    log('mini batch: %d' % NUM_MINI_BATCH)
+    log('train data: %d' % train_x_length)
+    log(' test data: %d' % len(news.validation.texts))
+    log('We will loop %d count per an epoch.' % batch_count)
+
+    # epochs
+    for epoch in range(NUM_EPOCHS):
+        random_indice = np.random.permutation(train_x_length)
+
+        # mini batch
+        log('Start %dth epoch.' % (epoch + 1))
+        for i in range(batch_count):
+            mini_batch_x = []
+            mini_batch_y = []
+            for j in range(min(train_x_length - i * NUM_MINI_BATCH, NUM_MINI_BATCH)):
+                mini_batch_x.append(news.train.texts[random_indice[i * NUM_MINI_BATCH + j]])
+                mini_batch_y.append(news.train.labels[random_indice[i * NUM_MINI_BATCH + j]])
+
+            # training
+            _, v1, v2, v3, v4 = sess.run([train, loss, accuracy, loss_sum, accr_sum],
+                                         feed_dict={input_x: mini_batch_x, input_y: mini_batch_y, keep: 0.5})
+            log('%4dth mini batch complete. LOSS: %f, ACCR: %f' % (i + 1, v1, v2))
+
+            # log for TensorBoard
+            current_step = tf.train.global_step(sess, global_step)
+            writer.add_summary(v3, current_step)
+            writer.add_summary(v4, current_step)
+
+            # save variables
+            if current_step % CHECKPOINTS_EVERY == 0:
+                saver.save(sess, 'checkpoints/model', global_step=current_step)
+                log('Checkout was completed.')
+
+            # evaluate
+            if current_step % EVALUATE_EVERY == 0:
+                random_test_indice = np.random.permutation(100)
+                random_test_x = news.validation.texts[random_test_indice]
+                random_test_y = news.validation.labels[random_test_indice]
+
+                v1, v2, v3, v4 = sess.run([loss, accuracy, t_loss_sum, t_accr_sum],
+                                          feed_dict={input_x: random_test_x, input_y: random_test_y, keep: 1.0})
+                log('Testing... LOSS: %f, ACCR: %f' % (v1, v2))
+                writer.add_summary(v3, current_step)
+                writer.add_summary(v4, current_step)
+
+        saver.save(sess, 'checkpoints/model_last')
