@@ -8,8 +8,8 @@ from datetime import datetime
 
 
 NUM_CATEGORY = 8
-EMBEDDING_SIZE = 128  # Hyper parameter
-NUM_FILTERS = 128
+EMBEDDING_SIZE = 800  # Hyper parameter
+NUM_FILTERS = EMBEDDING_SIZE
 FILTER_SIZES = [3, 4, 5]
 L2_LAMBDA = 0.0001
 NUM_MINI_BATCH = 64
